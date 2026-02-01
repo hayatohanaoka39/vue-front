@@ -258,8 +258,6 @@ async function fetchWorks() {
 }
 </script>
 
-</script>
-
 <style scoped>
 .anime-listview {
   padding: 20px;
