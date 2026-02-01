@@ -156,16 +156,7 @@ async function fetchWorks() {
   } catch (err) {
     console.error(err);
   }
-}<script setup>
-import Header from '@/components/Header.vue'
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-
-const router = useRouter()
-const sites = ref([])
-const selectedSite = ref('__all__')
-const items = ref([])
+}
 
 onMounted(async () => {
   await fetchSites()
