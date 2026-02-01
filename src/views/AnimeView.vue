@@ -73,15 +73,6 @@ onMounted(async () => {
   await fetchWorks()
 })
 
-// ひらがな⇔カタカナ変換
-function toHiragana(str) {
-  if (!str) return ''
-  return str.normalize('NFKC')
-    .replace(/[\u30A1-\u30F6]/g, ch =>
-      String.fromCharCode(ch.charCodeAt(0) - 0x60)
-    )
-}
-
 // 検索用
 const searchQuery = ref('')
 const filteredItems = computed(() =>
