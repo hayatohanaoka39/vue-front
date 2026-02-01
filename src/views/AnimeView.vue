@@ -68,92 +68,6 @@ const sites = ref([])
 const selectedSite = ref('__all__')
 const items = ref([])
 
-onMounted(async () => {
-  await fetchSites()
-  await fetchWorks()
-})
-
-// 検索用
-const searchQuery = ref('')
-const filteredItems = computed(() =>
-  items.value
-    .filter(item => {
-      const titleNormalized = toHiragana(item.title).toLowerCase()
-      const queryNormalized = toHiragana(searchQuery.value).toLowerCase()
-      return titleNormalized.includes(queryNormalized)
-    })
-    .sort((a, b) => {
-      if (a.work_id === 1) return -1
-      if (b.work_id === 1) return 1
-      return a.work_id - b.work_id
-    })
-)
-
-// 詳細画面へ遷移
-function viewDetail(id) {
-  router.push(`/detail/${id}`)
-}
-
-// 削除処理
-async function deleteItem(workId) {
-  try {
-    await axios.put(
-      `${import.meta.env.VITE_API_BASE_URL}/api/works/${workId}/delete`
-    )
-    items.value = items.value.filter(item => item.work_id !== workId)
-    alert('ごみ箱に移動しました')
-  } catch (err) {
-    console.error(err)
-    alert(err.response?.data?.error || '削除に失敗しました')
-  }
-}
-
-// 登録画面へ遷移
-function goToRegister() {
-  router.push('/register')
-}
-
-// サイト一覧を取得
-async function fetchSites() {
-  try {
-    const res = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URL}/api/works/apps`,
-      { params: { type: 'アニメ' } }
-    )
-    sites.value = res.data
-  } catch (err) {
-    console.error(err)
-  }
-}
-
-// アニメ作品を取得（サイト絞り込み対応）
-async function fetchWorks() {
-  try {
-    let siteParam = null;
-
-    if (selectedSite.value === '__all__') {
-      siteParam = null;
-    } else if (selectedSite.value === '__unregistered__') {
-      siteParam = ''; // 未登録指定
-    } else {
-      siteParam = selectedSite.value;
-    }
-
-    const res = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URL}/api/works/anime`,
-      { params: { user_id: 123, site: siteParam } }
-    )
-    items.value = res.data;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-onMounted(async () => {
-  await fetchSites()
-  await fetchWorks()
-})
-
 // ひらがな⇔カタカナ変換
 function toHiragana(str) {
   if (!str) return ''
@@ -219,25 +133,31 @@ async function fetchSites() {
 // アニメ作品を取得（サイト絞り込み対応）
 async function fetchWorks() {
   try {
-    let siteParam = null;
+    let siteParam = null
 
     if (selectedSite.value === '__all__') {
-      siteParam = null;
+      siteParam = null
     } else if (selectedSite.value === '__unregistered__') {
-      siteParam = ''; // 未登録指定
+      siteParam = ''
     } else {
-      siteParam = selectedSite.value;
+      siteParam = selectedSite.value
     }
 
     const res = await axios.get(
       `${import.meta.env.VITE_API_BASE_URL}/api/works/anime`,
       { params: { user_id: 123, site: siteParam } }
     )
-    items.value = res.data;
+    items.value = res.data
   } catch (err) {
-    console.error(err);
+    console.error(err)
   }
 }
+
+// 初期データ取得
+onMounted(async () => {
+  await fetchSites()
+  await fetchWorks()
+})
 </script>
 
 <style scoped>
