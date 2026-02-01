@@ -50,7 +50,7 @@ const router = useRouter()
 onMounted(async () => {
   try {
     const res = await axios.get(
-      'https://anime-api-967759995465.asia-northeast1.run.app/api/works/trash'
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/trash`
     )
     trashItems.value = res.data
   } catch (err) {
@@ -66,7 +66,7 @@ function viewDetail(id) {
 async function restoreItem(id, title) {
   try {
     await axios.put(
-      `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${id}/restore`
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/${id}/restore`
     )
     trashItems.value = trashItems.value.filter(item => item.work_id !== id)
     alert(` ${title} を復元しました`)
@@ -79,7 +79,7 @@ async function restoreItem(id, title) {
 async function deleteItem(id, title) {
   try {
     await axios.put(
-      `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${id}/hide`
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/${id}/hide`
     )
     trashItems.value = trashItems.value.filter(item => item.work_id !== id)
     alert(`${title} を完全削除しました（非表示化）`)

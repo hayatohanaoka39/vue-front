@@ -218,7 +218,9 @@ onMounted(async () => {
 
   // ★ DB にある作品を編集する場合
   if (route.query.workId) {
-    const res = await axios.get(`https://anime-api-967759995465.asia-northeast1.run.app/api/works/${route.query.workId}`)
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/${route.query.workId}`
+    )
     const work = res.data[0]
 
     loadedWork = {
@@ -267,10 +269,12 @@ if (savedImage) {
 // DB検索 → なければ外部API
 async function searchDbWork() {
   try {
-    const res = await axios.post('https://anime-api-967759995465.asia-northeast1.run.app/api/works/search-work', {
+  const res = await axios.post(
+    `${import.meta.env.VITE_API_BASE_URL}/api/works/search-work`,
+    {
       title: title.value,
       work_type: workType.value,
-      user_id: 123   // ★ログインユーザーIDを必ず渡す
+      user_id: 123
     })
 
     if (res.data.length > 0) {
@@ -284,7 +288,9 @@ async function searchDbWork() {
       }
     } else {
       // DBに存在しない場合のみ外部APIへ
-      const apiRes = await axios.post('https://anime-api-967759995465.asia-northeast1.run.app/api/works/fetch-external', {
+    const apiRes = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/fetch-external`,
+      {
         title: title.value,
         work_type: workType.value
       })
@@ -318,41 +324,49 @@ async function selectWork(work) {
 }
 
 // 登録処理
+// 登録処理
 async function registerWork() {
   try {
     // まず既存作品チェック
-    const checkRes = await axios.post('https://anime-api-967759995465.asia-northeast1.run.app/api/works/search-work', {
-      title: title.value,
-      work_type: workType.value,
-      user_id: 123   // ★ログインユーザーIDを必ず渡す
-    })
+    const checkRes = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/search-work`,
+      {
+        title: title.value,
+        work_type: workType.value,
+        user_id: 123
+      }
+    )
 
     if (checkRes.data.length > 0) {
       const existingWork = checkRes.data[0]
 
       if (existingWork.isRegistered) {
-        // ユーザーが既に登録済みの場合
-        const confirmed = window.confirm(`${existingWork.title} は既にあなたのライブラリに登録されています。\n詳細画面に移動しますか？`)
+        const confirmed = window.confirm(
+          `${existingWork.title} は既にあなたのライブラリに登録されています。\n詳細画面に移動しますか？`
+        )
         if (confirmed) {
           router.push(`/detail/${existingWork.work_id}`)
         }
         return
       } else {
         // 作品はDBにあるがユーザー未登録 → user_works に新規登録
-        const res = await axios.post('https://anime-api-967759995465.asia-northeast1.run.app/api/works', {
-          title: title.value,
-          author: author.value,
-          publisher: publisher.value,
-          summary: summary.value,
-          image_url: imageUrl.value,
-          work_type: workType.value,
-          user_id: 123,
-          status: status.value,
-          satisfaction: rating.value,
-          impression: impression.value,
-          watching_apps: site.value,
-          tags: selectedGenres.value
-        })
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/api/works`,
+          {
+            title: title.value,
+            author: author.value,
+            publisher: publisher.value,
+            summary: summary.value,
+            image_url: imageUrl.value,
+            work_type: workType.value,
+            user_id: 123,
+            status: status.value,
+            satisfaction: rating.value,
+            impression: impression.value,
+            watching_apps: site.value,
+            tags: selectedGenres.value
+          }
+        )
 
         if (res.data.success) {
           alert("登録成功！")
@@ -365,20 +379,23 @@ async function registerWork() {
     }
 
     // DBに存在しない場合 → 新規登録（外部API補完あり）
-    const res = await axios.post('https://anime-api-967759995465.asia-northeast1.run.app/api/works', {
-      title: title.value,
-      author: author.value,
-      publisher: publisher.value,
-      summary: summary.value,
-      image_url: imageUrl.value,
-      work_type: workType.value,
-      user_id: 123,
-      status: status.value,
-      satisfaction: rating.value,
-      impression: impression.value,
-      watching_apps: site.value,
-      tags: selectedGenres.value
-    })
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works`,
+      {
+        title: title.value,
+        author: author.value,
+        publisher: publisher.value,
+        summary: summary.value,
+        image_url: imageUrl.value,
+        work_type: workType.value,
+        user_id: 123,
+        status: status.value,
+        satisfaction: rating.value,
+        impression: impression.value,
+        watching_apps: site.value,
+        tags: selectedGenres.value
+      }
+    )
 
     if (res.data.success) {
       alert("登録成功！")
@@ -411,10 +428,13 @@ async function searchWork() {
     }
 
     // 通常のジャンル分類処理
-    const res = await axios.post('https://anime-api-967759995465.asia-northeast1.run.app/api/works/classify-genre', {
-      title: title.value,
-      summary: summary.value
-    })
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/classify-genre`,
+      {
+        title: title.value,
+        summary: summary.value
+      }
+    )
 
     if (res.data.error) {
       alert(res.data.error)
@@ -467,7 +487,9 @@ async function cancelRegister() {
   if (confirm("入力内容をリセットしますか？")) {
     try {
       if (workId.value) {
-        await axios.delete(`https://anime-api-967759995465.asia-northeast1.run.app/api/works/user-works/${workId.value}/123`)
+        await axios.delete(
+          `${import.meta.env.VITE_API_BASE_URL}/api/works/user-works/${workId.value}/123`
+        )
       }
     } catch (err) {
       console.error("キャンセル削除エラー:", err)

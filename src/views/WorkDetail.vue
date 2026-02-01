@@ -30,9 +30,9 @@ export default {
   async created() {
     const id = this.$route.params.id; // ← URLから作品IDを取得
     try {
-      const res = await axios.get(
-        `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${id}`
-      );
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/works/${id}`
+        );
 
       const rows = res.data;
 

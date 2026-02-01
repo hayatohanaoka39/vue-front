@@ -47,7 +47,7 @@ onMounted(async () => {
 
   try {
     const res = await fetch(
-      `https://anime-api-967759995465.asia-northeast1.run.app/api/works/search-images?title=${encodeURIComponent(title)}`
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/search-images?title=${encodeURIComponent(title)}`
     )
     images.value = await res.json()
   } catch (e) {

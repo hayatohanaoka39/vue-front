@@ -86,12 +86,12 @@ onMounted(async () => {
 
   try {
     const res = await axios.post(
-      'https://anime-api-967759995465.asia-northeast1.run.app/api/works/recommendations',
-      {
-        user_id: 123,
-        answers,
-        genres
-      })
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/recommendations`,
+    {
+    user_id: 123,
+    answers,
+    genres
+  })
 
     recommendedItems.value = res.data
 
@@ -110,7 +110,7 @@ onMounted(async () => {
 async function selectWork(item) {
   // 1. DB から作品情報を取得
   const res = await axios.get(
-    `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${item.work_id}`
+    `${import.meta.env.VITE_API_BASE_URL}/api/works/${item.work_id}`
   )
 
   const work = res.data[0]

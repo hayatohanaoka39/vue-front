@@ -117,7 +117,7 @@ function viewDetail(id) {
 async function deleteItem(workId) {
   try {
     await axios.put(
-     `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${workId}/delete`
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/${workId}/delete`
     )
     items.value = items.value.filter(item => item.work_id !== workId)
     alert('ごみ箱に移動しました')
@@ -136,16 +136,12 @@ function goToRegister() {
 async function fetchSites() {
   try {
     const res = await axios.get(
-      'https://anime-api-967759995465.asia-northeast1.run.app/api/works/apps',
-    {
-      params: { type: '漫画' }
-    })
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/apps`,
+      { params: { type: '漫画' } }
+    )
 
     const rawSites = res.data
-
-    // 空文字やnullは除外（未登録は固定オプションで表示する）
     const cleanedSites = [...new Set(rawSites.filter(site => site && site.trim() !== ''))]
-
     sites.value = cleanedSites
   } catch (err) {
     console.error(err)
@@ -158,18 +154,17 @@ async function fetchWorks() {
     let siteParam = null
 
     if (selectedSite.value === '__all__') {
-       siteParam = null 
-    } else if (selectedSite.value === '__unregistered__') { 
+      siteParam = null
+    } else if (selectedSite.value === '__unregistered__') {
       siteParam = '' // 未登録指定
     } else {
-       siteParam = selectedSite.value
+      siteParam = selectedSite.value
     }
 
     const res = await axios.get(
-      'https://anime-api-967759995465.asia-northeast1.run.app/api/works/manga',
-    {
-      params: { user_id: 123, site: siteParam }
-    })
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/manga`,
+      { params: { user_id: 123, site: siteParam } }
+    )
 
     items.value = res.data
   } catch (err) {

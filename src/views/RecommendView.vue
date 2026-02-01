@@ -121,9 +121,9 @@ const animeCompanies = [
 
 onMounted(async () => {
   try {
-    const res = await axios.get(
-      'https://anime-api-967759995465.asia-northeast1.run.app/api/genres'
-    )
+  const res = await axios.get(
+    `${import.meta.env.VITE_API_BASE_URL}/api/genres`
+  )
     genres.value = res.data
   } catch (err) {
     console.error('ジャンル取得エラー:', err)

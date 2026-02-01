@@ -187,31 +187,31 @@ async function fetchWorks() {
     siteParam = selectedSite.value
   }
 
-  const res = await axios.get(
-    'https://anime-api-967759995465.asia-northeast1.run.app/api/works',
-    {
-      params: {
-        user_id: 123,
-        type: currentView.value === 'manga' ? '漫画'
-            : currentView.value === 'anime' ? 'アニメ'
-            : null,
-        site: siteParam
-      }
-    })
+const res = await axios.get(
+  `${import.meta.env.VITE_API_BASE_URL}/api/works`,
+  {
+    params: {
+      user_id: 123,
+      type: currentView.value === 'manga' ? '漫画'
+          : currentView.value === 'anime' ? 'アニメ'
+          : null,
+      site: siteParam
+    }
+  })
 
   works.value = res.data
 }
 
 async function fetchSites() {
   if (currentView.value === 'manga') {
-    const res = await axios.get(
-    'https://anime-api-967759995465.asia-northeast1.run.app/api/works/apps',
+  const res = await axios.get(
+    `${import.meta.env.VITE_API_BASE_URL}/api/works/apps`,
     { params: { type: '漫画' } }
   )
     sites.value = res.data
   } else if (currentView.value === 'anime') {
-   const res = await axios.get(
-    'https://anime-api-967759995465.asia-northeast1.run.app/api/works/apps',
+  const res = await axios.get(
+    `${import.meta.env.VITE_API_BASE_URL}/api/works/apps`,
     { params: { type: 'アニメ' } }
   )
     sites.value = res.data
@@ -229,7 +229,6 @@ function switchView(view) {
 }
 
 onMounted(async () => {
-  // クエリから view を復元
   const view = router.currentRoute.value.query.view
   if (view) {
     currentView.value = 'all'
@@ -240,15 +239,15 @@ onMounted(async () => {
     await fetchWorks()
   }
 
-  // ランダム10件ずつ
   const resRandom = await axios.get(
-    'https://anime-api-967759995465.asia-northeast1.run.app/api/works/home-random?user_id=123'
+    `${import.meta.env.VITE_API_BASE_URL}/api/works/home-random`,
+    { params: { user_id: 123 } }
   )
   randomItems.value = resRandom.data
 
-  // 全件リスト
   const resWorks = await axios.get(
-    'https://anime-api-967759995465.asia-northeast1.run.app/api/works/works?user_id=123'
+    `${import.meta.env.VITE_API_BASE_URL}/api/works/works`,
+    { params: { user_id: 123 } }
   )
   items.value = resWorks.data
 })

@@ -106,7 +106,9 @@ function viewDetail(id) {
 // 削除処理
 async function deleteItem(workId) {
   try {
-    await axios.put(`https://anime-api-967759995465.asia-northeast1.run.app/api/works/${workId}/delete`)
+    await axios.put(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/${workId}/delete`
+    )
     items.value = items.value.filter(item => item.work_id !== workId)
     alert('ごみ箱に移動しました')
   } catch (err) {
@@ -123,9 +125,10 @@ function goToRegister() {
 // サイト一覧を取得
 async function fetchSites() {
   try {
-    const res = await axios.get('https://anime-api-967759995465.asia-northeast1.run.app/api/works/apps', {
-      params: { type: 'アニメ' }
-    })
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/apps`,
+      { params: { type: 'アニメ' } }
+    )
     sites.value = res.data
   } catch (err) {
     console.error(err)
@@ -145,14 +148,116 @@ async function fetchWorks() {
       siteParam = selectedSite.value;
     }
 
-    const res = await axios.get('https://anime-api-967759995465.asia-northeast1.run.app/api/works/anime', {
-      params: { user_id: 123, site: siteParam }
-    });
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/anime`,
+      { params: { user_id: 123, site: siteParam } }
+    )
+    items.value = res.data;
+  } catch (err) {
+    console.error(err);
+  }
+}<script setup>
+import Header from '@/components/Header.vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+
+const router = useRouter()
+const sites = ref([])
+const selectedSite = ref('__all__')
+const items = ref([])
+
+onMounted(async () => {
+  await fetchSites()
+  await fetchWorks()
+})
+
+// ひらがな⇔カタカナ変換
+function toHiragana(str) {
+  if (!str) return ''
+  return str.normalize('NFKC')
+    .replace(/[\u30A1-\u30F6]/g, ch =>
+      String.fromCharCode(ch.charCodeAt(0) - 0x60)
+    )
+}
+
+// 検索用
+const searchQuery = ref('')
+const filteredItems = computed(() =>
+  items.value
+    .filter(item => {
+      const titleNormalized = toHiragana(item.title).toLowerCase()
+      const queryNormalized = toHiragana(searchQuery.value).toLowerCase()
+      return titleNormalized.includes(queryNormalized)
+    })
+    .sort((a, b) => {
+      if (a.work_id === 1) return -1
+      if (b.work_id === 1) return 1
+      return a.work_id - b.work_id
+    })
+)
+
+// 詳細画面へ遷移
+function viewDetail(id) {
+  router.push(`/detail/${id}`)
+}
+
+// 削除処理
+async function deleteItem(workId) {
+  try {
+    await axios.put(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/${workId}/delete`
+    )
+    items.value = items.value.filter(item => item.work_id !== workId)
+    alert('ごみ箱に移動しました')
+  } catch (err) {
+    console.error(err)
+    alert(err.response?.data?.error || '削除に失敗しました')
+  }
+}
+
+// 登録画面へ遷移
+function goToRegister() {
+  router.push('/register')
+}
+
+// サイト一覧を取得
+async function fetchSites() {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/apps`,
+      { params: { type: 'アニメ' } }
+    )
+    sites.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// アニメ作品を取得（サイト絞り込み対応）
+async function fetchWorks() {
+  try {
+    let siteParam = null;
+
+    if (selectedSite.value === '__all__') {
+      siteParam = null;
+    } else if (selectedSite.value === '__unregistered__') {
+      siteParam = ''; // 未登録指定
+    } else {
+      siteParam = selectedSite.value;
+    }
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/anime`,
+      { params: { user_id: 123, site: siteParam } }
+    )
     items.value = res.data;
   } catch (err) {
     console.error(err);
   }
 }
+</script>
+
 </script>
 
 <style scoped>

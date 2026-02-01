@@ -138,11 +138,11 @@ const showImageModal = ref(false)
 const showSummaryModal = ref(false)
 
 onMounted(async () => {
- const res = await axios.get(
-  `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${route.params.id}`
-)
+  const res = await axios.get(
+    `${import.meta.env.VITE_API_BASE_URL}/api/works/${route.params.id}`
+  )
   const rows = res.data
-if (rows.length > 0) {
+  if (rows.length > 0) {
     const base = rows[0]
     const data = {
       title: base.title || '',
@@ -158,7 +158,7 @@ if (rows.length > 0) {
       user_work_id: base.user_work_id || null
     }
     work.value = { ...data }
-    originalWork.value = { ...data }  // ← 初期状態を保存
+    originalWork.value = { ...data }
   }
 })
 
@@ -169,26 +169,26 @@ function hasChanges() {
 
 async function updateWork() {
   try {
-await axios.put(
-  `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${route.params.id}/update`,
-  {
-    title: work.value.title,
-    summary: work.value.summary,
-    author: work.value.author,
-    publisher: work.value.publisher,
-    status: work.value.status,
-    satisfaction: work.value.rating,
-    impression: work.value.impression,
-    watching_apps: work.value.site,
-    user_work_id: work.value.user_work_id,
-    tags: work.value.tags
-  }
-)
+  await axios.put(
+    `${import.meta.env.VITE_API_BASE_URL}/api/works/${route.params.id}/update`,
+    {
+      title: work.value.title,
+      summary: work.value.summary,
+      author: work.value.author,
+      publisher: work.value.publisher,
+      status: work.value.status,
+      satisfaction: work.value.rating,
+      impression: work.value.impression,
+      watching_apps: work.value.site,
+      user_work_id: work.value.user_work_id,
+      tags: work.value.tags
+    }
+  )
     isUpdated.value = true   // ← 更新成功後にフラグを立てる
 
     // 保存成功後に最新データを再取得
     const res = await axios.get(
-      `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${route.params.id}`
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/${route.params.id}`
     )
     const rows = res.data
     if (rows.length > 0) {
@@ -218,7 +218,7 @@ await axios.put(
 async function deleteWork() {
   try {
     await axios.put(
-      `https://anime-api-967759995465.asia-northeast1.run.app/api/works/${route.params.id}/delete`
+      `${import.meta.env.VITE_API_BASE_URL}/api/works/${route.params.id}/delete`
     )
     alert('一覧から削除しました')
     router.back()
